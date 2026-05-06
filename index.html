@@ -9,7 +9,10 @@
 <meta name="apple-mobile-web-app-title" content="Sözlük">
 <meta name="description" content="Almanca-Türkçe cep sözlüğü. Çevrimdışı çalışır.">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" sizes="167x167" href="apple-touch-icon-167.png">
+<link rel="apple-touch-icon" sizes="152x152" href="apple-touch-icon-152.png">
+<link rel="apple-touch-icon" sizes="120x120" href="apple-touch-icon-120.png">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <title>Wörterbuch · Almanca–Türkçe Sözlük</title>
 
@@ -358,6 +361,122 @@ main {
   .entry { grid-template-columns: 1fr; gap: 4px; padding: 14px 2px; }
   .entry-turkish { max-width: 100%; text-align: left; }
   .german-word { font-size: 21px; }
+}
+
+/* ─── Tablet (iPad portrait — 768px ve üstü) ───────────────────────────── */
+@media (min-width: 768px) {
+  main {
+    max-width: 720px;
+    padding: 56px 36px 100px;
+    padding-top: max(56px, env(safe-area-inset-top));
+  }
+
+  .header { margin-bottom: 40px; }
+
+  .kicker {
+    font-size: 12px;
+    letter-spacing: 0.26em;
+    margin-bottom: 12px;
+  }
+
+  .title {
+    font-size: clamp(56px, 8vw, 72px);
+  }
+
+  .subtitle {
+    font-size: 17px;
+    margin-top: 14px;
+  }
+
+  .byline {
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  .search-input {
+    padding: 22px 56px 22px 60px;
+    font-size: 20px;
+    border-radius: 16px;
+  }
+
+  .search-icon {
+    left: 24px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .search-clear {
+    right: 18px;
+    width: 30px;
+    height: 30px;
+  }
+
+  .status {
+    padding: 18px 6px 26px;
+    font-size: 12px;
+  }
+
+  .status .count {
+    font-size: 15px;
+  }
+
+  .divider { margin-bottom: 22px; }
+
+  .entry {
+    padding: 20px 8px;
+    gap: 24px;
+  }
+
+  .article {
+    font-size: 11px;
+    padding: 4px 9px;
+  }
+
+  .german-word {
+    font-size: 25px;
+  }
+
+  .entry-turkish {
+    font-size: 17px;
+  }
+
+  .footer-hint {
+    margin-top: 64px;
+    padding: 24px 28px;
+  }
+
+  .footer-hint-title {
+    font-size: 18px;
+  }
+
+  .footer-hint-text {
+    font-size: 14px;
+  }
+}
+
+/* ─── Büyük tablet & iPad Pro (1024px ve üstü) ─────────────────────────── */
+@media (min-width: 1024px) {
+  main {
+    max-width: 760px;
+    padding-top: 72px;
+    padding-bottom: 120px;
+  }
+
+  .header {
+    margin-bottom: 48px;
+  }
+
+  .title {
+    font-size: clamp(64px, 6vw, 80px);
+  }
+
+  .entry {
+    padding: 22px 10px;
+  }
+
+  .german-word {
+    font-size: 26px;
+  }
 }
 </style>
 </head>

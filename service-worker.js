@@ -1,6 +1,6 @@
 // Wörterbuch Service Worker
 // Versiyonu değiştirdiğinde tüm kullanıcılar güncel sürümü alır.
-const CACHE_VERSION = 'woerterbuch-v5';
+const CACHE_VERSION = 'woerterbuch-v6';
 
 // Offline çalışacak temel dosyalar
 const ASSETS = [
@@ -9,7 +9,11 @@ const ASSETS = [
   './manifest.json',
   './icon.svg',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  './apple-touch-icon.png',
+  './apple-touch-icon-152.png',
+  './apple-touch-icon-167.png',
+  './apple-touch-icon-120.png'
 ];
 
 // Yükleme: dosyaları önbelleğe al
