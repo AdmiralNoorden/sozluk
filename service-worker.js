@@ -1,6 +1,6 @@
 // Wörterbuch Service Worker
 // Versiyonu değiştirdiğinde tüm kullanıcılar güncel sürümü alır.
-const CACHE_VERSION = 'woerterbuch-v1';
+const CACHE_VERSION = 'woerterbuch-v3';
 
 // Offline çalışacak temel dosyalar
 const ASSETS = [
