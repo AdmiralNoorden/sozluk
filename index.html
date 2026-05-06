@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#f4ede0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Sözlük">
+<meta name="description" content="Almanca-Türkçe cep sözlüğü. Çevrimdışı çalışır.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<title>Wörterbuch · Almanca–Türkçe Sözlük</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --cream: #f4ede0;
+  --cream-dark: #ebe2d1;
+  --paper: #faf6ed;
+  --ink: #1a1410;
+  --ink-soft: #4a3f35;
+  --muted: #8b7d6b;
+  --accent: #8b2635;
+  --accent-dark: #6b1d28;
+  --accent-soft: #f0d4d8;
+  --der: #2e5e8a;
+  --der-bg: #dde7f0;
+  --die: #8b2635;
+  --die-bg: #f0d4d8;
+  --das: #4a7c4a;
+  --das-bg: #dde9dd;
+  --border: rgba(26, 20, 16, 0.08);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+  min-height: 100dvh;
+  overscroll-behavior-y: contain;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.08 0 0 0 0 0.06 0 0 0 0.04 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.35;
+  z-index: 1;
+  mix-blend-mode: multiply;
+}
+
+main {
+  position: relative;
+  z-index: 2;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+  padding-top: max(32px, env(safe-area-inset-top));
+  padding-bottom: max(80px, calc(env(safe-area-inset-bottom) + 40px));
+}
+
+.header { margin-bottom: 28px; text-align: center; }
+
+.kicker {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.title {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-style: italic;
+  font-size: clamp(38px, 11vw, 56px);
+  line-height: 0.95;
+  color: var(--ink);
+  font-variation-settings: "opsz" 144, "SOFT" 50;
+  letter-spacing: -0.025em;
+}
+
+.title .amp {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: 400;
+  margin: 0 0.05em;
+}
+
+.subtitle {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  color: var(--muted);
+  margin-top: 10px;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.search-wrap { position: relative; margin-bottom: 4px; }
+
+.search-input {
+  width: 100%;
+  background: var(--paper);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 48px 18px 52px;
+  font-family: 'Fraunces', serif;
+  font-size: 19px;
+  color: var(--ink);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+  font-variation-settings: "opsz" 14;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.search-input:focus {
+  border-color: var(--accent);
+  background: white;
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.search-input::placeholder { color: var(--muted); font-style: italic; }
+.search-input::-webkit-search-cancel-button { display: none; }
+
+.search-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.search-clear {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--cream-dark);
+  border: none;
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  color: var(--ink-soft);
+}
+
+.search-clear.visible { opacity: 1; pointer-events: auto; }
+
+.status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 4px 22px;
+  font-size: 11px;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.status .count {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 0 18px;
+  position: relative;
+}
+
+.divider::after {
+  content: '✦';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--cream);
+  padding: 0 16px;
+  color: var(--accent);
+  font-size: 11px;
+}
+
+.results { display: flex; flex-direction: column; }
+
+.entry {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: 16px;
+  padding: 16px 4px;
+  border-bottom: 1px dashed var(--border);
+  animation: fadeIn 0.25s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.entry-german {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+}
+
+.article {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: lowercase;
+  color: var(--muted);
+  background: var(--cream-dark);
+  padding: 3px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.04em;
+  flex-shrink: 0;
+}
+
+.article.der { color: var(--der); background: var(--der-bg); }
+.article.die { color: var(--die); background: var(--die-bg); }
+.article.das { color: var(--das); background: var(--das-bg); }
+
+.german-word {
+  font-family: 'Fraunces', serif;
+  font-weight: 500;
+  font-size: 22px;
+  font-variation-settings: "opsz" 36, "SOFT" 30;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+  word-break: break-word;
+}
+
+.entry-turkish {
+  font-family: 'Manrope', sans-serif;
+  font-size: 15px;
+  color: var(--ink-soft);
+  text-align: right;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.match {
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  padding: 0 2px;
+  border-radius: 2px;
+  font-weight: 600;
+}
+
+.empty {
+  text-align: center;
+  padding: 56px 20px;
+  animation: fadeIn 0.3s ease both;
+}
+
+.empty-icon {
+  font-size: 36px;
+  color: var(--accent);
+  font-family: 'Fraunces', serif;
+  margin-bottom: 18px;
+  opacity: 0.5;
+  font-style: italic;
+}
+
+.empty-title {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 22px;
+  color: var(--ink);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.empty-text {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 320px;
+  margin: 0 auto;
+}
+
+.empty-text em { color: var(--ink); font-style: italic; font-family: 'Fraunces', serif; }
+
+.footer-hint {
+  margin-top: 50px;
+  padding: 18px 20px;
+  background: var(--paper);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+
+.footer-hint-title {
+  font-family: 'Fraunces', serif;
+  font-style: italic;
+  font-size: 16px;
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.footer-hint-text {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.footer-hint-text em {
+  font-style: italic;
+  font-family: 'Fraunces', serif;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 480px) {
+  .entry { grid-template-columns: 1fr; gap: 4px; padding: 14px 2px; }
+  .entry-turkish { max-width: 100%; text-align: left; }
+  .german-word { font-size: 21px; }
+}
+</style>
+</head>
+<body>
+
+<main>
+  <header class="header">
+    <div class="kicker">Almanca · Türkçe</div>
+    <h1 class="title">Wörter<span class="amp">&amp;</span>buch</h1>
+    <div class="subtitle">cebinizdeki küçük sözlük</div>
+  </header>
+
+  <div class="search-wrap">
+    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="7"/>
+      <path d="m20 20-3.5-3.5"/>
+    </svg>
+    <input id="search" class="search-input" type="search" placeholder="Almanca veya Türkçe ara…" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false">
+    <button class="search-clear" id="clearBtn" aria-label="Temizle">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M18 6 6 18M6 6l12 12"/>
+      </svg>
+    </button>
+  </div>
+
+  <div class="status">
+    <span>Sözlük</span>
+    <span class="count" id="count">—</span>
+  </div>
+
+  <div class="divider"></div>
+
+  <div id="results" class="results"></div>
+
+  <div class="footer-hint">
+    <div class="footer-hint-title">Ana ekrana ekle</div>
+    <div class="footer-hint-text">
+      iPhone'da Safari'de <em>Paylaş</em> simgesine bas, ardından <em>Ana Ekrana Ekle</em>'yi seç. Uygulama gibi açılır, internet olmadan da çalışır.
+    </div>
+  </div>
+</main>
+
+<script>
+const dictionary = [
+  // Selamlamalar & nezaket
+  { de: "Hallo", tr: "Merhaba" },
+  { de: "Tschüss", tr: "Hoşça kal" },
+  { de: "Auf Wiedersehen", tr: "Görüşürüz / Hoşça kalın" },
+  { de: "Guten Morgen", tr: "Günaydın" },
+  { de: "Guten Tag", tr: "İyi günler" },
+  { de: "Guten Abend", tr: "İyi akşamlar" },
+  { de: "Gute Nacht", tr: "İyi geceler" },
+  { de: "Danke", tr: "Teşekkürler" },
+  { de: "Bitte", tr: "Lütfen / Rica ederim" },
+  { de: "Entschuldigung", tr: "Affedersiniz / Pardon" },
+  { de: "Ja", tr: "Evet" },
+  { de: "Nein", tr: "Hayır" },
+  { de: "Vielleicht", tr: "Belki" },
+  { de: "Wie geht's?", tr: "Nasılsın?" },
+  { de: "Mir geht es gut", tr: "İyiyim" },
+
+  // Aile
+  { de: "Mutter", tr: "anne", article: "die" },
+  { de: "Vater", tr: "baba", article: "der" },
+  { de: "Schwester", tr: "kız kardeş", article: "die" },
+  { de: "Bruder", tr: "erkek kardeş", article: "der" },
+  { de: "Tochter", tr: "kız evlat", article: "die" },
+  { de: "Sohn", tr: "oğul", article: "der" },
+  { de: "Familie", tr: "aile", article: "die" },
+  { de: "Großmutter", tr: "büyükanne", article: "die" },
+  { de: "Großvater", tr: "büyükbaba", article: "der" },
+  { de: "Eltern", tr: "ebeveyn / anne baba" },
+  { de: "Kind", tr: "çocuk", article: "das" },
+  { de: "Mann", tr: "adam / erkek", article: "der" },
+  { de: "Frau", tr: "kadın", article: "die" },
+  { de: "Junge", tr: "oğlan", article: "der" },
+  { de: "Mädchen", tr: "kız", article: "das" },
+  { de: "Onkel", tr: "amca / dayı", article: "der" },
+  { de: "Tante", tr: "teyze / hala", article: "die" },
+  { de: "Cousin", tr: "kuzen (erkek)", article: "der" },
+  { de: "Cousine", tr: "kuzen (kız)", article: "die" },
+
+  // Sayılar
+  { de: "eins", tr: "bir" },
+  { de: "zwei", tr: "iki" },
+  { de: "drei", tr: "üç" },
+  { de: "vier", tr: "dört" },
+  { de: "fünf", tr: "beş" },
+  { de: "sechs", tr: "altı" },
+  { de: "sieben", tr: "yedi" },
+  { de: "acht", tr: "sekiz" },
+  { de: "neun", tr: "dokuz" },
+  { de: "zehn", tr: "on" },
+  { de: "elf", tr: "on bir" },
+  { de: "zwölf", tr: "on iki" },
+  { de: "dreizehn", tr: "on üç" },
+  { de: "zwanzig", tr: "yirmi" },
+  { de: "dreißig", tr: "otuz" },
+  { de: "vierzig", tr: "kırk" },
+  { de: "fünfzig", tr: "elli" },
+  { de: "hundert", tr: "yüz" },
+  { de: "tausend", tr: "bin" },
+  { de: "Million", tr: "milyon", article: "die" },
+
+  // Günler
+  { de: "Montag", tr: "Pazartesi", article: "der" },
+  { de: "Dienstag", tr: "Salı", article: "der" },
+  { de: "Mittwoch", tr: "Çarşamba", article: "der" },
+  { de: "Donnerstag", tr: "Perşembe", article: "der" },
+  { de: "Freitag", tr: "Cuma", article: "der" },
+  { de: "Samstag", tr: "Cumartesi", article: "der" },
+  { de: "Sonntag", tr: "Pazar", article: "der" },
+  { de: "Wochenende", tr: "hafta sonu", article: "das" },
+
+  // Aylar
+  { de: "Januar", tr: "Ocak", article: "der" },
+  { de: "Februar", tr: "Şubat", article: "der" },
+  { de: "März", tr: "Mart", article: "der" },
+  { de: "April", tr: "Nisan", article: "der" },
+  { de: "Mai", tr: "Mayıs", article: "der" },
+  { de: "Juni", tr: "Haziran", article: "der" },
+  { de: "Juli", tr: "Temmuz", article: "der" },
+  { de: "August", tr: "Ağustos", article: "der" },
+  { de: "September", tr: "Eylül", article: "der" },
+  { de: "Oktober", tr: "Ekim", article: "der" },
+  { de: "November", tr: "Kasım", article: "der" },
+  { de: "Dezember", tr: "Aralık", article: "der" },
+
+  // Zaman
+  { de: "Tag", tr: "gün", article: "der" },
+  { de: "Woche", tr: "hafta", article: "die" },
+  { de: "Monat", tr: "ay", article: "der" },
+  { de: "Jahr", tr: "yıl", article: "das" },
+  { de: "Stunde", tr: "saat (süre)", article: "die" },
+  { de: "Minute", tr: "dakika", article: "die" },
+  { de: "Sekunde", tr: "saniye", article: "die" },
+  { de: "heute", tr: "bugün" },
+  { de: "morgen", tr: "yarın" },
+  { de: "gestern", tr: "dün" },
+  { de: "jetzt", tr: "şimdi" },
+  { de: "später", tr: "sonra" },
+  { de: "früh", tr: "erken" },
+  { de: "spät", tr: "geç" },
+  { de: "immer", tr: "her zaman" },
+  { de: "nie", tr: "asla" },
+  { de: "manchmal", tr: "bazen" },
+  { de: "oft", tr: "sık sık" },
+  { de: "Zeit", tr: "zaman", article: "die" },
+
+  // Yiyecek & içecek
+  { de: "Brot", tr: "ekmek", article: "das" },
+  { de: "Wasser", tr: "su", article: "das" },
+  { de: "Milch", tr: "süt", article: "die" },
+  { de: "Kaffee", tr: "kahve", article: "der" },
+  { de: "Tee", tr: "çay", article: "der" },
+  { de: "Apfel", tr: "elma", article: "der" },
+  { de: "Banane", tr: "muz", article: "die" },
+  { de: "Orange", tr: "portakal", article: "die" },
+  { de: "Fleisch", tr: "et", article: "das" },
+  { de: "Fisch", tr: "balık", article: "der" },
+  { de: "Käse", tr: "peynir", article: "der" },
+  { de: "Ei", tr: "yumurta", article: "das" },
+  { de: "Zucker", tr: "şeker", article: "der" },
+  { de: "Salz", tr: "tuz", article: "das" },
+  { de: "Reis", tr: "pirinç", article: "der" },
+  { de: "Suppe", tr: "çorba", article: "die" },
+  { de: "Kartoffel", tr: "patates", article: "die" },
+  { de: "Tomate", tr: "domates", article: "die" },
+  { de: "Gemüse", tr: "sebze", article: "das" },
+  { de: "Obst", tr: "meyve", article: "das" },
+  { de: "Fleischer", tr: "kasap", article: "der" },
+  { de: "Bier", tr: "bira", article: "das" },
+  { de: "Wein", tr: "şarap", article: "der" },
+  { de: "Saft", tr: "meyve suyu", article: "der" },
+  { de: "Salat", tr: "salata", article: "der" },
+  { de: "Butter", tr: "tereyağı", article: "die" },
+  { de: "Joghurt", tr: "yoğurt", article: "der" },
+  { de: "Honig", tr: "bal", article: "der" },
+  { de: "Schokolade", tr: "çikolata", article: "die" },
+
+  // Zamirler
+  { de: "ich", tr: "ben" },
+  { de: "du", tr: "sen" },
+  { de: "er", tr: "o (eril)" },
+  { de: "sie", tr: "o (dişil) / onlar" },
+  { de: "es", tr: "o (cinssiz)" },
+  { de: "wir", tr: "biz" },
+  { de: "ihr", tr: "siz" },
+  { de: "Sie", tr: "siz (resmi)" },
+
+  // Soru kelimeleri
+  { de: "was", tr: "ne" },
+  { de: "wer", tr: "kim" },
+  { de: "wo", tr: "nerede" },
+  { de: "wohin", tr: "nereye" },
+  { de: "woher", tr: "nereden" },
+  { de: "wann", tr: "ne zaman" },
+  { de: "warum", tr: "neden" },
+  { de: "wie", tr: "nasıl" },
+  { de: "wie viel", tr: "ne kadar" },
+  { de: "welche", tr: "hangi" },
+
+  // Fiiller
+  { de: "sein", tr: "olmak" },
+  { de: "haben", tr: "sahip olmak" },
+  { de: "gehen", tr: "gitmek" },
+  { de: "kommen", tr: "gelmek" },
+  { de: "machen", tr: "yapmak" },
+  { de: "sagen", tr: "söylemek" },
+  { de: "sehen", tr: "görmek" },
+  { de: "wissen", tr: "bilmek (bilgi)" },
+  { de: "kennen", tr: "tanımak" },
+  { de: "können", tr: "-ebilmek" },
+  { de: "müssen", tr: "zorunda olmak" },
+  { de: "wollen", tr: "istemek" },
+  { de: "sollen", tr: "-meli" },
+  { de: "dürfen", tr: "izinli olmak" },
+  { de: "mögen", tr: "hoşlanmak" },
+  { de: "lieben", tr: "sevmek" },
+  { de: "essen", tr: "yemek" },
+  { de: "trinken", tr: "içmek" },
+  { de: "schlafen", tr: "uyumak" },
+  { de: "arbeiten", tr: "çalışmak" },
+  { de: "lernen", tr: "öğrenmek" },
+  { de: "studieren", tr: "okumak (üniv.)" },
+  { de: "sprechen", tr: "konuşmak" },
+  { de: "lesen", tr: "okumak" },
+  { de: "schreiben", tr: "yazmak" },
+  { de: "hören", tr: "duymak / dinlemek" },
+  { de: "kaufen", tr: "satın almak" },
+  { de: "verkaufen", tr: "satmak" },
+  { de: "helfen", tr: "yardım etmek" },
+  { de: "fahren", tr: "(araçla) gitmek" },
+  { de: "laufen", tr: "koşmak / yürümek" },
+  { de: "spielen", tr: "oynamak" },
+  { de: "denken", tr: "düşünmek" },
+  { de: "glauben", tr: "inanmak" },
+  { de: "finden", tr: "bulmak" },
+  { de: "geben", tr: "vermek" },
+  { de: "nehmen", tr: "almak" },
+  { de: "bringen", tr: "getirmek" },
+  { de: "brauchen", tr: "ihtiyaç duymak" },
+  { de: "warten", tr: "beklemek" },
+  { de: "fragen", tr: "sormak" },
+  { de: "antworten", tr: "cevaplamak" },
+  { de: "verstehen", tr: "anlamak" },
+  { de: "vergessen", tr: "unutmak" },
+  { de: "öffnen", tr: "açmak" },
+  { de: "schließen", tr: "kapatmak" },
+  { de: "fühlen", tr: "hissetmek" },
+  { de: "leben", tr: "yaşamak" },
+  { de: "sterben", tr: "ölmek" },
+  { de: "anfangen", tr: "başlamak" },
+  { de: "aufhören", tr: "bırakmak / durmak" },
+  { de: "treffen", tr: "buluşmak / karşılaşmak" },
+
+  // Renkler
+  { de: "rot", tr: "kırmızı" },
+  { de: "blau", tr: "mavi" },
+  { de: "gelb", tr: "sarı" },
+  { de: "grün", tr: "yeşil" },
+  { de: "schwarz", tr: "siyah" },
+  { de: "weiß", tr: "beyaz" },
+  { de: "grau", tr: "gri" },
+  { de: "braun", tr: "kahverengi" },
+  { de: "orange", tr: "turuncu" },
+  { de: "rosa", tr: "pembe" },
+  { de: "lila", tr: "mor" },
+  { de: "Farbe", tr: "renk", article: "die" },
+
+  // Sıfatlar
+  { de: "gut", tr: "iyi" },
+  { de: "schlecht", tr: "kötü" },
+  { de: "groß", tr: "büyük" },
+  { de: "klein", tr: "küçük" },
+  { de: "neu", tr: "yeni" },
+  { de: "alt", tr: "eski / yaşlı" },
+  { de: "jung", tr: "genç" },
+  { de: "heiß", tr: "sıcak" },
+  { de: "kalt", tr: "soğuk" },
+  { de: "warm", tr: "ılık" },
+  { de: "schön", tr: "güzel" },
+  { de: "hässlich", tr: "çirkin" },
+  { de: "schnell", tr: "hızlı" },
+  { de: "langsam", tr: "yavaş" },
+  { de: "glücklich", tr: "mutlu" },
+  { de: "traurig", tr: "üzgün" },
+  { de: "müde", tr: "yorgun" },
+  { de: "hungrig", tr: "aç" },
+  { de: "durstig", tr: "susuz" },
+  { de: "reich", tr: "zengin" },
+  { de: "arm", tr: "fakir" },
+  { de: "billig", tr: "ucuz" },
+  { de: "teuer", tr: "pahalı" },
+  { de: "leicht", tr: "kolay / hafif" },
+  { de: "schwer", tr: "zor / ağır" },
+  { de: "richtig", tr: "doğru" },
+  { de: "falsch", tr: "yanlış" },
+  { de: "voll", tr: "dolu" },
+  { de: "leer", tr: "boş" },
+  { de: "offen", tr: "açık" },
+  { de: "geschlossen", tr: "kapalı" },
+  { de: "lang", tr: "uzun" },
+  { de: "kurz", tr: "kısa" },
+  { de: "hoch", tr: "yüksek" },
+  { de: "niedrig", tr: "alçak" },
+  { de: "stark", tr: "güçlü" },
+  { de: "schwach", tr: "zayıf" },
+  { de: "wichtig", tr: "önemli" },
+  { de: "interessant", tr: "ilginç" },
+
+  // Yerler
+  { de: "Haus", tr: "ev", article: "das" },
+  { de: "Wohnung", tr: "daire", article: "die" },
+  { de: "Schule", tr: "okul", article: "die" },
+  { de: "Universität", tr: "üniversite", article: "die" },
+  { de: "Krankenhaus", tr: "hastane", article: "das" },
+  { de: "Bahnhof", tr: "tren istasyonu", article: "der" },
+  { de: "Flughafen", tr: "havalimanı", article: "der" },
+  { de: "Geschäft", tr: "dükkân / mağaza", article: "das" },
+  { de: "Markt", tr: "pazar", article: "der" },
+  { de: "Restaurant", tr: "restoran", article: "das" },
+  { de: "Stadt", tr: "şehir", article: "die" },
+  { de: "Land", tr: "ülke", article: "das" },
+  { de: "Straße", tr: "cadde / sokak", article: "die" },
+  { de: "Park", tr: "park", article: "der" },
+  { de: "Kirche", tr: "kilise", article: "die" },
+  { de: "Moschee", tr: "cami", article: "die" },
+  { de: "Bibliothek", tr: "kütüphane", article: "die" },
+  { de: "Hotel", tr: "otel", article: "das" },
+  { de: "Bank", tr: "banka", article: "die" },
+  { de: "Apotheke", tr: "eczane", article: "die" },
+  { de: "Post", tr: "postane", article: "die" },
+
+  // Vücut
+  { de: "Kopf", tr: "kafa / baş", article: "der" },
+  { de: "Auge", tr: "göz", article: "das" },
+  { de: "Nase", tr: "burun", article: "die" },
+  { de: "Mund", tr: "ağız", article: "der" },
+  { de: "Ohr", tr: "kulak", article: "das" },
+  { de: "Hand", tr: "el", article: "die" },
+  { de: "Fuß", tr: "ayak", article: "der" },
+  { de: "Bein", tr: "bacak", article: "das" },
+  { de: "Arm", tr: "kol", article: "der" },
+  { de: "Herz", tr: "kalp", article: "das" },
+  { de: "Haar", tr: "saç", article: "das" },
+  { de: "Zahn", tr: "diş", article: "der" },
+  { de: "Finger", tr: "parmak", article: "der" },
+  { de: "Bauch", tr: "karın", article: "der" },
+  { de: "Rücken", tr: "sırt", article: "der" },
+  { de: "Hals", tr: "boyun", article: "der" },
+
+  // Hava
+  { de: "Regen", tr: "yağmur", article: "der" },
+  { de: "Schnee", tr: "kar", article: "der" },
+  { de: "Sonne", tr: "güneş", article: "die" },
+  { de: "Wind", tr: "rüzgâr", article: "der" },
+  { de: "Wolke", tr: "bulut", article: "die" },
+  { de: "Himmel", tr: "gökyüzü", article: "der" },
+  { de: "Wetter", tr: "hava (durumu)", article: "das" },
+  { de: "Sommer", tr: "yaz", article: "der" },
+  { de: "Winter", tr: "kış", article: "der" },
+  { de: "Frühling", tr: "ilkbahar", article: "der" },
+  { de: "Herbst", tr: "sonbahar", article: "der" },
+
+  // Diğer
+  { de: "Buch", tr: "kitap", article: "das" },
+  { de: "Stift", tr: "kalem", article: "der" },
+  { de: "Tisch", tr: "masa", article: "der" },
+  { de: "Stuhl", tr: "sandalye", article: "der" },
+  { de: "Tür", tr: "kapı", article: "die" },
+  { de: "Fenster", tr: "pencere", article: "das" },
+  { de: "Auto", tr: "araba", article: "das" },
+  { de: "Zug", tr: "tren", article: "der" },
+  { de: "Flugzeug", tr: "uçak", article: "das" },
+  { de: "Bus", tr: "otobüs", article: "der" },
+  { de: "Fahrrad", tr: "bisiklet", article: "das" },
+  { de: "Geld", tr: "para", article: "das" },
+  { de: "Liebe", tr: "aşk", article: "die" },
+  { de: "Freund", tr: "arkadaş (erkek)", article: "der" },
+  { de: "Freundin", tr: "arkadaş (kız)", article: "die" },
+  { de: "Arbeit", tr: "iş", article: "die" },
+  { de: "Name", tr: "isim", article: "der" },
+  { de: "Telefon", tr: "telefon", article: "das" },
+  { de: "Computer", tr: "bilgisayar", article: "der" },
+  { de: "Musik", tr: "müzik", article: "die" },
+  { de: "Film", tr: "film", article: "der" },
+  { de: "Spiel", tr: "oyun", article: "das" },
+  { de: "Foto", tr: "fotoğraf", article: "das" },
+  { de: "Brief", tr: "mektup", article: "der" },
+  { de: "Schlüssel", tr: "anahtar", article: "der" },
+  { de: "Tasche", tr: "çanta", article: "die" },
+  { de: "Hund", tr: "köpek", article: "der" },
+  { de: "Katze", tr: "kedi", article: "die" },
+  { de: "Vogel", tr: "kuş", article: "der" },
+  { de: "Pferd", tr: "at", article: "das" },
+  { de: "Baum", tr: "ağaç", article: "der" },
+  { de: "Blume", tr: "çiçek", article: "die" },
+  { de: "Sprache", tr: "dil", article: "die" },
+  { de: "Deutsch", tr: "Almanca", article: "das" },
+  { de: "Türkisch", tr: "Türkçe", article: "das" },
+  { de: "Englisch", tr: "İngilizce", article: "das" },
+  { de: "Welt", tr: "dünya", article: "die" },
+  { de: "Mensch", tr: "insan", article: "der" },
+  { de: "Leute", tr: "insanlar" },
+  { de: "Frage", tr: "soru", article: "die" },
+  { de: "Antwort", tr: "cevap", article: "die" },
+  { de: "Problem", tr: "problem / sorun", article: "das" },
+  { de: "Idee", tr: "fikir", article: "die" }
+];
+
+// Türkçe ve Almanca'nın özel karakterlerini normalize eder (arama için)
+function normalize(s) {
+  return s.toLowerCase()
+    .replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/ß/g, 'ss')
+    .replace(/ı/g, 'i').replace(/i̇/g, 'i')
+    .replace(/ş/g, 's').replace(/ğ/g, 'g').replace(/ç/g, 'c')
+    .replace(/[^a-z0-9\s]/g, '');
+}
+
+const searchEl = document.getElementById('search');
+const resultsEl = document.getElementById('results');
+const countEl = document.getElementById('count');
+const clearBtn = document.getElementById('clearBtn');
+
+// Önbellek: arama tabanı
+const searchIndex = dictionary.map(e => ({
+  entry: e,
+  deNorm: normalize(e.de),
+  trNorm: normalize(e.tr)
+}));
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]);
+}
+
+function highlight(text, query) {
+  if (!query) return escapeHtml(text);
+  const safe = escapeHtml(text);
+  const normText = normalize(text);
+  const normQuery = normalize(query);
+  if (!normQuery) return safe;
+  const idx = normText.indexOf(normQuery);
+  if (idx === -1) return safe;
+  // Karakterler birebir hizalanmıyor olabilir (umlaut farkları), bu yüzden orijinal stringte de aynı karakter sayısı kadar eşle
+  const start = idx;
+  const end = idx + normQuery.length;
+  return escapeHtml(text.slice(0, start)) +
+    '<span class="match">' + escapeHtml(text.slice(start, end)) + '</span>' +
+    escapeHtml(text.slice(end));
+}
+
+function search(query) {
+  const q = query.trim();
+  if (!q) return dictionary;
+  const nq = normalize(q);
+  if (!nq) return dictionary;
+
+  const exact = [];
+  const startsWith = [];
+  const contains = [];
+
+  for (const item of searchIndex) {
+    const { entry, deNorm, trNorm } = item;
+    if (deNorm === nq || trNorm === nq) exact.push(entry);
+    else if (deNorm.startsWith(nq) || trNorm.startsWith(nq)) startsWith.push(entry);
+    else if (deNorm.includes(nq) || trNorm.includes(nq)) contains.push(entry);
+  }
+
+  return [...exact, ...startsWith, ...contains];
+}
+
+function render(entries, query) {
+  if (entries.length === 0) {
+    resultsEl.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">∅</div>
+        <div class="empty-title">Bulunamadı</div>
+        <div class="empty-text"><em>"${escapeHtml(query)}"</em> sözlükte yok. Yazımı kontrol edin veya farklı bir kelime deneyin.</div>
+      </div>`;
+    countEl.textContent = '0 sonuç';
+    return;
+  }
+
+  const html = entries.map(e => `
+    <div class="entry">
+      <div class="entry-german">
+        ${e.article ? `<span class="article ${e.article}">${e.article}</span>` : ''}
+        <span class="german-word">${highlight(e.de, query)}</span>
+      </div>
+      <div class="entry-turkish">${highlight(e.tr, query)}</div>
+    </div>
+  `).join('');
+
+  resultsEl.innerHTML = html;
+  countEl.textContent = query.trim()
+    ? `${entries.length} sonuç`
+    : `${dictionary.length} kelime`;
+}
+
+let renderTimer;
+searchEl.addEventListener('input', () => {
+  const q = searchEl.value;
+  clearBtn.classList.toggle('visible', q.length > 0);
+  // Debounce hafif: çok hızlı yazımda jank olmaz
+  clearTimeout(renderTimer);
+  renderTimer = setTimeout(() => render(search(q), q), 30);
+});
+
+clearBtn.addEventListener('click', () => {
+  searchEl.value = '';
+  clearBtn.classList.remove('visible');
+  searchEl.focus();
+  render(search(''), '');
+});
+
+// İlk render
+render(search(''), '');
+
+// Service Worker (PWA olarak yayınlandığında devreye girer)
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('service-worker.js').catch(() => {
+      // Yerelde dosyayı doğrudan açıyorsa veya SW desteklenmiyorsa sessiz geç
+    });
+  });
+}
+</script>
+</body>
+</html>
